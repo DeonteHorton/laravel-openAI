@@ -29,16 +29,6 @@ Route::middleware([
 
     Route::controller(OpenAIController::class)->group(function() {
         Route::get('/chat', 'index')->name('chat');
-    });
-
-    Route::get('/test', function () {
-        // $result = OpenAI::completions()->create([
-        //     'model' => 'text-curie-001',
-        //     // 'model' => 'text-davinci-003',
-        //     'prompt' => 'what explain this code ',
-        //     'max_tokens' => 256 * 2
-        // ]);
-
-        // echo $result['choices'][0]['text']; // an open-source, widely-used, server-side scripting language.
+        Route::post('/chat', 'store')->name('chat.ask');
     });
 });

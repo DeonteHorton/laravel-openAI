@@ -279,6 +279,7 @@ const logout = () => {
                 </div>
             </header>
 
+            <p-toast></p-toast>
             <!-- Page Content -->
             <main>
                 <div class="py-12">
