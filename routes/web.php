@@ -1,8 +1,10 @@
 <?php
 
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OpenAIController;
 use Inertia\Inertia;
+use OpenAI\Laravel\Facades\OpenAI;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Application;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,13 +17,8 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+Route::get('/', function() {
+    return redirect()->route('login');
 });
 
 Route::middleware([
@@ -29,7 +26,19 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+
+    Route::controller(OpenAIController::class)->group(function() {
+        Route::get('/chat', 'index')->name('chat');
+    });
+
+    Route::get('/test', function () {
+        // $result = OpenAI::completions()->create([
+        //     'model' => 'text-curie-001',
+        //     // 'model' => 'text-davinci-003',
+        //     'prompt' => 'what explain this code ',
+        //     'max_tokens' => 256 * 2
+        // ]);
+
+        // echo $result['choices'][0]['text']; // an open-source, widely-used, server-side scripting language.
+    });
 });
