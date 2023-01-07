@@ -24,7 +24,7 @@ class OpenAIController extends Controller
             ->orderBy('created_at', 'asc')
             ->get();
 
-        if ($request->user()->id !== $chats[0]['user_id']) {
+        if ($request->user()->id !== auth()->id()) {
             return Response::deny('Unauthorized access to data'); // TODO -> Make a policy
         }
 
