@@ -26,6 +26,8 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'chat_limit',
+        'role_id',
         'password',
     ];
 
@@ -62,5 +64,10 @@ class User extends Authenticatable
     public function aiChats()
     {
         return $this->hasMany(OpenAI::class);
+    }
+
+    public function role()
+    {
+        return $this->hasOne(Role::class, 'id', 'role_id');
     }
 }
