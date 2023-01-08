@@ -9,9 +9,12 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 
-defineProps({
+const props = defineProps({
     title: String,
 });
+
+const userRole = Inertia.page.props.role;
+
 
 const showingNavigationDropdown = ref(false);
 
@@ -26,11 +29,25 @@ const switchToTeam = (team) => {
 const logout = () => {
     Inertia.post(route('logout'));
 };
+
+const links = [
+    {
+        name: 'Chat',
+        route: 'chat',
+        visible: true,
+    },
+    {
+        name: 'Users',
+        route: 'user.index',
+        visible: userRole.name === 'super_admin',
+    },
+]
+
 </script>
 
 <template>
     <div>
-        <Head :title="title" />
+        <Head :title="props.title" />
 
         <Banner />
 
@@ -49,8 +66,8 @@ const logout = () => {
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <NavLink :href="route('chat')" :active="route().current('chat')">
-                                    Chat
+                                <NavLink v-for="link in links" v-show="link.visible" :href="route(link.route)" :active="route().current(link.route) ">
+                                    {{ link.name }}
                                 </NavLink>
                             </div>
                         </div>
@@ -192,8 +209,8 @@ const logout = () => {
                 <!-- Responsive Navigation Menu -->
                 <div :class="{'block': showingNavigationDropdown, 'hidden': ! showingNavigationDropdown}" class="sm:hidden">
                     <div class="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink :href="route('chat')" :active="route().current('chat')">
-                            Chat
+                        <ResponsiveNavLink v-for="link in links" v-show="link.visible" :href="route(link.route)" :active="route().current(link.route)">
+                            {{ link.name }}
                         </ResponsiveNavLink>
                     </div>
 
@@ -279,12 +296,14 @@ const logout = () => {
                 </div>
             </header>
 
-            <p-toast></p-toast>
+            <p-toast />
+            <p-confirm-popup />
             <!-- Page Content -->
             <main>
                 <div class="py-12">
                     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 px-4">
                         <slot />
+                        <p-scrolltop />
                     </div>
                 </div>
             </main>

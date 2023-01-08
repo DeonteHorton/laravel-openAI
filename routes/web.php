@@ -1,10 +1,8 @@
 <?php
 
-use App\Http\Controllers\OpenAIController;
-use Inertia\Inertia;
-use OpenAI\Laravel\Facades\OpenAI;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Application;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\OpenAIController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,5 +28,12 @@ Route::middleware([
     Route::controller(OpenAIController::class)->group(function() {
         Route::get('/chat', 'index')->name('chat');
         Route::post('/chat', 'store')->name('chat.ask');
+    });
+
+    Route::controller(UserController::class)->group(function() {
+        Route::get('/users',  'index')->name('user.index');
+        Route::post('/users', 'store')->name('user.create');
+        Route::put('/users/{user}', 'update')->name('user.update');
+        Route::delete('/users/{user}', 'destroy')->name('user.destroy');
     });
 });

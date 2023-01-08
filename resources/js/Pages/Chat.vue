@@ -73,7 +73,7 @@ onMounted(() => {
         <div class="mt-12 flex justify-center">
             <div v-if="form.errors.limit_reached">{{ form.errors.limit_reached }}</div>
             <form @submit.prevent="submit(form)" class="bg-gray-300 opacity-100 py-4 p-input-group p-button-set fixed bottom-0 w-full flex justify-center">
-                <p-input-text :class="{'p-invalid': form.errors.limit_reached}" :disabled="form.processing"  v-model="form.prompt" v-on:focus="scrollToBottom" placeholder="Ask me something 😎" class="w-4/5" />
+                <p-input-text :class="{'p-invalid': form.errors.limit_reached}" :disabled="form.processing"  v-model="form.prompt" v-on:focus="scrollToBottom" placeholder="Ask me something 😎" class="md:w-4/5 w-3/5" />
                 <p-button :loading="form.processing" icon="pi pi-send" :class="['p-button-secondary', {'p-invalid': form.errors.limit_reached}]" type="submit"/>
             </form>
         </div>

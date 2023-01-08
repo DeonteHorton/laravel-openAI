@@ -49,7 +49,6 @@ class OpenAIController extends Controller
 
         $authUser = User::find(auth()->id());
 
-
         if ($request->user()->id !== $authUser->id) {
             return Response::deny('Unauthorized access to data'); // TODO -> Make a policy
         }
