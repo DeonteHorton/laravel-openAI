@@ -29,8 +29,8 @@ const submit = (form) => {
             chats.value.push({prompt: form.prompt, answer: ''})
         },
         onSuccess: () => {
-            let index = chats.value.length - 1
-            chats.value[index].answer = props.response
+            typeWriter()
+            scrollToBottom()
             form.reset();
         },
         onError: (data) => {
@@ -43,12 +43,30 @@ const submit = (form) => {
 
 
 onMounted(() => {
-    const scroll = () => {
-        window.scrollTo({left: 0, top: document.body.scrollHeight, behavior: 'smooth'});
-    }
-
-    scroll()
+    scrollToBottom()
 })
+
+window.onload = () => {
+    scrollToBottom()
+}
+
+const typeWriterIndex = ref(0);
+
+function typeWriter() {
+    let index = chats.value.length - 1
+    if (typeWriterIndex.value < props.response.length) {
+        chats.value[index].answer += props.response.charAt(typeWriterIndex.value);
+
+        typeWriterIndex.value++;
+        setTimeout(typeWriter, 20);
+    } else {
+        typeWriterIndex.value = 0
+    }
+    scrollToBottom()
+
+}
+
+
 
 </script>
 
@@ -60,12 +78,12 @@ onMounted(() => {
             </h2>
         </template>
 
-        <div v-for="chat in chats" class="bg-gray-300 p-3 overflow-auto overflow-x-hidden break-words  max-w-full  max-h-auto mb-4">
+        <div v-for="(chat, index) in chats" class="bg-gray-300 p-3 overflow-auto overflow-x-hidden break-words  max-w-full  max-h-auto mb-4">
            <div class="bg-gray-100 p-2 border-b-4">
                 {{ chat.prompt }}
            </div>
            <div class="bg-gray-50 p-2">
-            <pre class="whitespace-pre-wrap" v-if="chat.answer">{{ chat.answer }}</pre>
+            <pre :data-index="index" class="whitespace-pre-wrap response" v-if="chat.answer">{{ chat.answer }}</pre>
             <p-skeleton v-else width="100%" height="2rem" borderRadius="16px" />
            </div>
         </div>
