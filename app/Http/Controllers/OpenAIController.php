@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\OpenAIModel;
 use Carbon\Carbon;
 use App\Models\User;
 use Inertia\Inertia;
@@ -53,14 +54,14 @@ class OpenAIController extends Controller
             return Response::deny('Unauthorized access to data'); // TODO -> Make a policy
         }
 
-        if ($authUser->aiChats()->whereDate('created_at', Carbon::today())->count() >= $authUser->chat_limit) {
-            return redirect()->back()->withErrors([
-                'limit_reached' => 'Sorry, but you reached your chat limit for today, come back tomorrow to chat with the AI.'
-            ]);
-        }
+        // if ($authUser->aiChats()->whereDate('created_at', Carbon::today())->count() >= $authUser->chat_limit) {
+        //     return redirect()->back()->withErrors([
+        //         'limit_reached' => 'Sorry, but you reached your chat limit for today, come back tomorrow to chat with the AI.'
+        //     ]);
+        // }
 
         $result = OpenAI::completions()->create([
-            'model' => 'text-davinci-003',
+            'model' => OpenAIModel::davinci_updated,
             'prompt' => $request->prompt,
             'max_tokens' => 256 * 2
         ]);
@@ -75,38 +76,4 @@ class OpenAIController extends Controller
             'response' => $result['choices'][0]['text']
         ]);
     }
-
-    // /**
-    //  * Display the specified resource.
-    //  *
-    //  * @param  \App\Models\OpenAI  $openAI
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function show(OpenAI $openAI)
-    // {
-    //     //
-    // }
-
-    // /**
-    //  * Update the specified resource in storage.
-    //  *
-    //  * @param  \Illuminate\Http\Request  $request
-    //  * @param  \App\Models\OpenAI  $openAI
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function update(Request $request, OpenAITable $openAI)
-    // {
-    //     //
-    // }
-
-    // /**
-    //  * Remove the specified resource from storage.
-    //  *
-    //  * @param  \App\Models\OpenAI  $openAI
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function destroy(OpenAITable $openAI)
-    // {
-    //     //
-    // }
 }
