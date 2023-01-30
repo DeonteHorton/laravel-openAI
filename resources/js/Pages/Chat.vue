@@ -7,6 +7,7 @@ import { useToast } from 'primevue/usetoast'
 
 const props = defineProps({
     'chats': '',
+    'ai_models': '',
     'response': '',
 })
 
@@ -16,8 +17,13 @@ const scrollToBottom = () => {
 
 const chats = ref(props.chats);
 const input = ref(null);
+const ai_models = ref([]);
 
-let form = useForm({'prompt': ''})
+for (const key in props.ai_models) {
+    ai_models.value.push({'key': key, value: props.ai_models[key]});
+}
+
+let form = useForm({'prompt': '', 'model': ''})
 const toast = useToast();
 
 
@@ -27,7 +33,7 @@ const submit = (form) => {
         preserveScroll: true,
         onStart: () => {
             toast.add({severity:'warn', summary: 'I\'m Thinking', detail:'Let me get back to you on that 🤔!', life: 4000});
-            chats.value.push({prompt: form.prompt, answer: ''})
+            chats.value.push({prompt: form.prompt, answer: '', model: form.model})
         },
         onSuccess: () => {
             typeWriter()
@@ -96,7 +102,8 @@ function typeWriter() {
         <div class="mt-12 flex justify-center">
             <div v-if="form.errors.limit_reached">{{ form.errors.limit_reached }}</div>
             <form @submit.prevent="submit(form)" class="bg-gray-300 opacity-100 py-4 p-input-group p-button-set fixed bottom-0 w-full flex justify-center">
-                <p-input-text ref="input" :class="{'p-invalid': form.errors.limit_reached}" :disabled="form.processing"  v-model="form.prompt" v-on:focus="scrollToBottom" placeholder="Ask me something 😎" class="md:w-4/5 w-3/5" />
+                <p-dropdown v-model="form.model" :options="props.ai_models" optionLabel="key" optionValue="value"/>
+                <p-input-text ref="input" :class="{'p-invalid': form.errors.limit_reached}" :disabled="form.processing"  v-model="form.prompt" v-on:focus="scrollToBottom" placeholder="Ask me something 😎" class="md:w-3/5 w-2/5" />
                 <p-button :loading="form.processing" icon="pi pi-send" :class="['p-button-secondary', {'p-invalid': form.errors.limit_reached}]" type="submit"/>
             </form>
         </div>

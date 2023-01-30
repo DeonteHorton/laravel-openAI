@@ -30,7 +30,8 @@ class OpenAIController extends Controller
         }
 
         return Inertia::render('Chat', [
-            'chats' => $chats
+            'chats' => $chats,
+            'ai_models' => OpenAIModel::getConstants()
         ]);
     }
 
@@ -61,7 +62,7 @@ class OpenAIController extends Controller
         // }
 
         $result = OpenAI::completions()->create([
-            'model' => OpenAIModel::davinci_updated,
+            'model' => OpenAIModel::DAVINIC_UPDATED,
             'prompt' => $request->prompt,
             'max_tokens' => 256 * 2
         ]);

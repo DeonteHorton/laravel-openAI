@@ -2,18 +2,24 @@
 
 namespace App\Enums;
 
+use ReflectionClass;
+
 class OpenAIModel
 {
-    const davinci_updated = 'text-davinci-003';
+    const DAVINIC_UPDATED = 'text-davinci-003';
 
-    const curie = 'text-curie-001';
+    const CURIE = 'text-curie-001';
 
-    const babbage = 'text-babbage-001';
+    const BABBAGE = 'text-babbage-001';
 
-    const ada = 'text-ada-001';
+    const ADA = 'text-ada-001';
 
-    const davinci_old = 'text-davinic-002';
+    const DAVANIC_OLD = 'text-davinic-002';
 
-    const cushman = 'text-cushman-001';
+    const CUSHMAN = 'text-cushman-001';
 
+    static function getConstants() {
+        $oClass = new ReflectionClass(__CLASS__);
+        return $oClass->getConstants();
+    }
 }
