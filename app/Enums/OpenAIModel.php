@@ -6,17 +6,17 @@ use ReflectionClass;
 
 class OpenAIModel
 {
-    const DAVINIC_LATEST = 'text-davinci-003';
+    const DAVINIC_TEXT_BOT = 'text-davinci-003';
 
-    const CURIE = 'text-curie-001';
+    const CURIE_TEXT_BOT = 'text-curie-001';
 
-    const BABBAGE = 'text-babbage-001';
+    const BABBAGE_TEXT_BOT = 'text-babbage-001';
 
-    const ADA = 'text-ada-001';
+    const ADA_TEXT_BOT = 'text-ada-001';
 
-    const DAVANIC_OLD = 'text-davinic-002';
+    const DAVANIC_CODE_BOT = 'code-davinci-002';
 
-    const CUSHMAN = 'text-cushman-001';
+    const CUSHMAN_CODE_BOT = 'code-cushman-001';
 
     static function getConstants() {
         $oClass = new ReflectionClass(__CLASS__);

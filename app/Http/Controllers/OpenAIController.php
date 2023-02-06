@@ -44,9 +44,11 @@ class OpenAIController extends Controller
     public function store(Request $request, OpenAITable $openAITable)
     {
         $request->validate([
-            'prompt' => 'required|string'
+            'prompt' => 'required|string',
+            'model' => 'required|string'
         ], [], [
-            'prompt' => 'Prompt'
+            'prompt' => 'Prompt',
+            'model' => 'Model'
         ]);
 
         $defaultPrompt = 'can you tell me who created you and for what purpose? in a very detailed manner in paragraphs and tell me to ask you something?';
@@ -65,7 +67,7 @@ class OpenAIController extends Controller
         }
 
         $result = OpenAI::completions()->create([
-            'model' => $request->input('model', OpenAIModel::DAVINIC_LATEST),
+            'model' => $request->input('model', OpenAIModel::DAVINIC_TEXT_BOT),
             'prompt' => $request->input('prompt', $defaultPrompt),
             'max_tokens' => 256 * 2
         ]);
@@ -73,6 +75,7 @@ class OpenAIController extends Controller
         $openAITable->create([
             'user_id' => auth()->id(),
             'prompt' => $request->input('prompt', 'What is your purpose?'),
+            'model' => $request->input('model', OpenAIModel::DAVINIC_TEXT_BOT),
             'answer' => $result['choices'][0]['text']
         ]);
 
