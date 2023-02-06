@@ -28,7 +28,7 @@ for (const key in props.ai_models) {
     );
 
 
-    ai_models.value.push({'key': newKeys.join(' '), value: props.ai_models[key]});
+    ai_models.value.push({'key': newKeys.join(' '), data: props.ai_models[key]});
 }
 
 let form = useForm({'prompt': '', 'model': 'text-davinci-003'})
@@ -109,7 +109,11 @@ function typeWriter() {
         <div class="mt-12 flex justify-center">
             <div v-if="form.errors.limit_reached">{{ form.errors.limit_reached }}</div>
             <form @submit.prevent="submit(form)" class="bg-gray-300 opacity-100 py-4 p-input-group p-button-set fixed bottom-0 w-full flex justify-center">
-                <p-dropdown class="md:w-auto w-1/5" placeholder="Select an AI model" v-model="form.model" :options="ai_models" optionLabel="key" optionValue="value"/>
+                <p-dropdown class="md:w-auto w-1/5" placeholder="Select an AI model" v-model="form.model" :options="ai_models" optionLabel="key" optionValue="data.model">
+                    <template #option="{ option }">
+                        <div v-tooltip.left="option.data?.description">{{ option.key }}</div>
+                    </template>
+                </p-dropdown>
                 <p-input-text ref="input" :class="{'p-invalid': form.errors.limit_reached}" :disabled="form.processing"  v-model="form.prompt" v-on:focus="scrollToBottom" placeholder="Ask me something 😎" class="md:w-2/5 w-2/5" />
                 <p-button :loading="form.processing" icon="pi pi-send" :class="['p-button-secondary', {'p-invalid': form.errors.limit_reached}]" type="submit"/>
             </form>
