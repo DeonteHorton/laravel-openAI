@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\OpenAIModel;
 use Carbon\Carbon;
 use App\Models\User;
 use Inertia\Inertia;
@@ -29,7 +30,8 @@ class OpenAIController extends Controller
         }
 
         return Inertia::render('Chat', [
-            'chats' => $chats
+            'chats' => $chats,
+            'ai_models' => OpenAIModel::getConstants()
         ]);
     }
 
@@ -42,16 +44,21 @@ class OpenAIController extends Controller
     public function store(Request $request, OpenAITable $openAITable)
     {
         $request->validate([
-            'prompt' => 'required|string'
+            'prompt' => 'required|string',
+            'model' => 'required|string'
         ], [], [
-            'prompt' => 'Prompt'
+            'prompt' => 'Prompt',
+            'model' => 'Model'
         ]);
+
+        $defaultPrompt = 'can you tell me who created you and for what purpose? in a very detailed manner in paragraphs and tell me to ask you something?';
 
         $authUser = User::find(auth()->id());
 
         if ($request->user()->id !== $authUser->id) {
             return Response::deny('Unauthorized access to data'); // TODO -> Make a policy
         }
+
 
         if ($authUser->aiChats()->whereDate('created_at', Carbon::today())->count() >= $authUser->chat_limit) {
             return redirect()->back()->withErrors([
@@ -60,14 +67,15 @@ class OpenAIController extends Controller
         }
 
         $result = OpenAI::completions()->create([
-            'model' => 'text-davinci-003',
-            'prompt' => $request->prompt,
+            'model' => $request->input('model', OpenAIModel::DAVINIC_TEXT_BOT['model']),
+            'prompt' => $request->input('prompt', $defaultPrompt),
             'max_tokens' => 256 * 2
         ]);
 
         $openAITable->create([
             'user_id' => auth()->id(),
-            'prompt' => $request->prompt,
+            'prompt' => $request->input('prompt', 'What is your purpose?'),
+            'model' => $request->input('model', OpenAIModel::DAVINIC_TEXT_BOT['model']),
             'answer' => $result['choices'][0]['text']
         ]);
 
@@ -75,38 +83,4 @@ class OpenAIController extends Controller
             'response' => $result['choices'][0]['text']
         ]);
     }
-
-    // /**
-    //  * Display the specified resource.
-    //  *
-    //  * @param  \App\Models\OpenAI  $openAI
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function show(OpenAI $openAI)
-    // {
-    //     //
-    // }
-
-    // /**
-    //  * Update the specified resource in storage.
-    //  *
-    //  * @param  \Illuminate\Http\Request  $request
-    //  * @param  \App\Models\OpenAI  $openAI
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function update(Request $request, OpenAITable $openAI)
-    // {
-    //     //
-    // }
-
-    // /**
-    //  * Remove the specified resource from storage.
-    //  *
-    //  * @param  \App\Models\OpenAI  $openAI
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function destroy(OpenAITable $openAI)
-    // {
-    //     //
-    // }
 }
