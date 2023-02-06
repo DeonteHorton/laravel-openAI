@@ -49,27 +49,30 @@ class OpenAIController extends Controller
             'prompt' => 'Prompt'
         ]);
 
+        $defaultPrompt = 'can you tell me who created you and for what purpose? in a very detailed manner in paragraphs and tell me to ask you something?';
+
         $authUser = User::find(auth()->id());
 
         if ($request->user()->id !== $authUser->id) {
             return Response::deny('Unauthorized access to data'); // TODO -> Make a policy
         }
 
-        // if ($authUser->aiChats()->whereDate('created_at', Carbon::today())->count() >= $authUser->chat_limit) {
-        //     return redirect()->back()->withErrors([
-        //         'limit_reached' => 'Sorry, but you reached your chat limit for today, come back tomorrow to chat with the AI.'
-        //     ]);
-        // }
+
+        if ($authUser->aiChats()->whereDate('created_at', Carbon::today())->count() >= $authUser->chat_limit) {
+            return redirect()->back()->withErrors([
+                'limit_reached' => 'Sorry, but you reached your chat limit for today, come back tomorrow to chat with the AI.'
+            ]);
+        }
 
         $result = OpenAI::completions()->create([
-            'model' => OpenAIModel::DAVINIC_UPDATED,
-            'prompt' => $request->prompt,
+            'model' => $request->input('model', OpenAIModel::DAVINIC_LATEST),
+            'prompt' => $request->input('prompt', $defaultPrompt),
             'max_tokens' => 256 * 2
         ]);
 
         $openAITable->create([
             'user_id' => auth()->id(),
-            'prompt' => $request->prompt,
+            'prompt' => $request->input('prompt', 'What is your purpose?'),
             'answer' => $result['choices'][0]['text']
         ]);
 

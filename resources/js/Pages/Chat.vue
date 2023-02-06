@@ -31,7 +31,7 @@ for (const key in props.ai_models) {
     ai_models.value.push({'key': newKeys.join(' '), value: props.ai_models[key]});
 }
 
-let form = useForm({'prompt': '', 'model': ''})
+let form = useForm({'prompt': '', 'model': 'text-davinci-003'})
 const toast = useToast();
 
 

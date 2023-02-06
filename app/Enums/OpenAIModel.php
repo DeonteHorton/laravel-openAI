@@ -6,7 +6,7 @@ use ReflectionClass;
 
 class OpenAIModel
 {
-    const DAVINIC_UPDATED = 'text-davinci-003';
+    const DAVINIC_LATEST = 'text-davinci-003';
 
     const CURIE = 'text-curie-001';
 
