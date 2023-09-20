@@ -2,17 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\OpenAIModel;
 use Carbon\Carbon;
 use App\Models\User;
 use Inertia\Inertia;
+use App\Enums\OpenAIModel;
 use Illuminate\Http\Request;
-use OpenAI\Laravel\Facades\OpenAI;
+use App\Interfaces\AiInterface;
 use Illuminate\Auth\Access\Response;
 use App\Models\OpenAI as OpenAITable;
 
 class OpenAIController extends Controller
 {
+    protected $ai;
+
+    public function __construct(AiInterface $interface)
+    {
+        $this->ai = $interface;
+    }
+
+
     /**
      * Display a listing of the resource.
      *
@@ -20,6 +28,57 @@ class OpenAIController extends Controller
      */
     public function index(Request $request, OpenAITable $openAITable)
     {
+        $models = $this->ai->getModels();
+
+        $data = $models['data'];
+
+        $data = collect($data)->map(function ($model) {
+            return $model['id'];
+        });
+
+        $data = $data->filter(function ($model) {
+
+            $excludeVals = array("similarity","instruct", "search", "edit", "embedding");
+            if(0 < count(array_intersect(array_map('strtolower', explode('-', $model)), $excludeVals))) {
+
+                return false;
+            }
+
+            $includeVals = array("code", "text", "001");
+            if(1 >= count(array_intersect(array_map('strtolower', explode('-', $model)), $includeVals))) {
+
+                return false;
+            }
+
+            return true;
+        });
+
+        $data = array_values($data->toArray());
+
+        $data = array_map(function ($modelType) {
+            $model = explode('-', $modelType);
+
+            $name = ucfirst($model[1]);
+            $type = ucfirst($model[0]);
+
+            $data = [
+                'model' => 'text-davinci-003',
+                'prompt' => "Explain what the {$name} {$type} model, but keep the explanation very very short. Just to one sentence.",
+                'temperature' => 0,
+                'max_tokens' => 256
+            ];
+
+            $result = $this->ai->create($data);
+
+            return [
+                'model' => $modelType,
+                'title' => "{$name} {$type} Bot",
+                'description' => preg_replace('/\s*\R\s*/', ' ', trim($result['choices'][0]['text']))
+            ];
+        }, $data);
+
+        logger($data);
+
         $chats = $openAITable->query()
             ->where('user_id', auth()->id())
             ->orderBy('created_at', 'asc')
@@ -31,7 +90,7 @@ class OpenAIController extends Controller
 
         return Inertia::render('Chat', [
             'chats' => $chats,
-            'ai_models' => OpenAIModel::getConstants()
+            'ai_models' => $data
         ]);
     }
 
@@ -66,11 +125,13 @@ class OpenAIController extends Controller
             ]);
         }
 
-        $result = OpenAI::completions()->create([
+        $data = [
             'model' => $request->input('model', OpenAIModel::DAVINIC_TEXT_BOT['model']),
             'prompt' => $request->input('prompt', $defaultPrompt),
             'max_tokens' => 256 * 2
-        ]);
+        ];
+
+        $result = $this->ai->create($data);
 
         $openAITable->create([
             'user_id' => auth()->id(),

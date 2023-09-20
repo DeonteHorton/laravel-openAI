@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OpenAIController;
+// use App\Models\OpenAI;
+use OpenAI\Laravel\Facades\OpenAI;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,7 +17,7 @@ use App\Http\Controllers\OpenAIController;
 |
 */
 
-Route::get('/', function() {
+Route::get('/', function () {
     return redirect()->route('login');
 });
 
@@ -24,14 +26,13 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-
-    Route::controller(OpenAIController::class)->group(function() {
+    Route::controller(OpenAIController::class)->group(function () {
         Route::get('/chat', 'index')->name('chat');
         Route::post('/chat', 'store')->name('chat.ask');
     });
 
-    Route::controller(UserController::class)->group(function() {
-        Route::get('/users',  'index')->name('user.index');
+    Route::controller(UserController::class)->group(function () {
+        Route::get('/users', 'index')->name('user.index');
         Route::post('/users', 'store')->name('user.create');
         Route::put('/users/{user}', 'update')->name('user.update');
         Route::delete('/users/{user}', 'destroy')->name('user.destroy');

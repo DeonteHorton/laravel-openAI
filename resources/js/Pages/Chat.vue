@@ -20,18 +20,10 @@ const input = ref(null);
 const ai_models = ref([]);
 
 for (const key in props.ai_models) {
-    let newKeys = [];
-    let splitKeys = key.toLowerCase().split('_')
-
-    splitKeys.forEach(text =>
-        newKeys.push(text.charAt(0).toUpperCase() + text.slice(1))
-    );
-
-
-    ai_models.value.push({'key': newKeys.join(' '), data: props.ai_models[key]});
+    ai_models.value.push({'title': props.ai_models[key]['title'], 'data': props.ai_models[key], 'model': props.ai_models[key]['model']});
 }
 
-let form = useForm({'prompt': '', 'model': 'text-davinci-003'})
+let form = useForm({'prompt': '', 'model': 'text-davinci-001', 'title': 'Davinic Text Bot'});
 const toast = useToast();
 
 
@@ -109,9 +101,9 @@ function typeWriter() {
         <div class="mt-12 flex justify-center">
             <div v-if="form.errors.limit_reached">{{ form.errors.limit_reached }}</div>
             <form @submit.prevent="submit(form)" class="bg-gray-300 opacity-100 py-4 p-input-group p-button-set fixed bottom-0 w-full flex justify-center">
-                <p-dropdown class="md:w-auto w-1/5" placeholder="Select an AI model" v-model="form.model" :options="ai_models" optionLabel="key" optionValue="data.model">
+                <p-dropdown class="md:w-auto w-1/5" placeholder="Select an AI model" v-model="form.model" :options="ai_models" optionLabel="title" optionValue="model">
                     <template #option="{ option }">
-                        <div v-tooltip.left="option.data?.description">{{ option.key }}</div>
+                        <div v-tooltip.left="option.data?.description">{{ option.data.title }}</div>
                     </template>
                 </p-dropdown>
                 <p-input-text ref="input" :class="{'p-invalid': form.errors.limit_reached}" :disabled="form.processing"  v-model="form.prompt" v-on:focus="scrollToBottom" placeholder="Ask me something 😎" class="md:w-2/5 w-2/5" />
