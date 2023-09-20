@@ -124,7 +124,7 @@ class OpenAIController extends Controller
         }
 
         $data = [
-            'model' => $request->input('model', OpenAIModel::DAVINIC_TEXT_BOT['model']),
+            'model' => $request->input('model', 'text-davinci-001'),
             'prompt' => $request->input('prompt', $defaultPrompt),
             'max_tokens' => 256 * 2
         ];
@@ -134,7 +134,7 @@ class OpenAIController extends Controller
         $openAITable->create([
             'user_id' => auth()->id(),
             'prompt' => $request->input('prompt', 'What is your purpose?'),
-            'model' => $request->input('model', OpenAIModel::DAVINIC_TEXT_BOT['model']),
+            'model' => $request->input('model', 'text-davinci-001'),
             'answer' => $result['choices'][0]['text']
         ]);
 
