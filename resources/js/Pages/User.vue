@@ -1,6 +1,6 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import Welcome from '@/Components/Welcome.vue';
+import DateDisplay from '@/Components/Base/DateDisplay.vue';
 import { Inertia } from '@inertiajs/inertia';
 import { ref, onMounted, computed } from 'vue';
 import { useForm } from '@inertiajs/inertia-vue3';
@@ -156,6 +156,11 @@ const debounceHandler = debounce((event) => {
                         <p-button @click="editUser(data)" icon="pi pi-pencil" class="p-button-text p-button-secondary p-button-sm"/>
                         <p-button @click.prevent="deleteUser($event, data, $event.currentTarget)" icon="pi pi-trash" class="p-button-text p-button-secondary p-button-sm"/>
                     </div>
+                </template>
+            </p-column>
+            <p-column header="Created At" field="created_at">
+                <template #body="{ data }">
+                    <DateDisplay class="mx-auto" :date="data.created_at" />
                 </template>
             </p-column>
         </p-datatable>
