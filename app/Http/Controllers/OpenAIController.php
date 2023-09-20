@@ -77,8 +77,6 @@ class OpenAIController extends Controller
             ];
         }, $data);
 
-        logger($data);
-
         $chats = $openAITable->query()
             ->where('user_id', auth()->id())
             ->orderBy('created_at', 'asc')
